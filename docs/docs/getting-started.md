@@ -21,7 +21,8 @@ For Homebrew installation:
 ### Homebrew (macOS/Linux)
 
 ```bash
-brew install jordanterry/gefx-cli/gfx-cli
+brew tap jordanterry/gefx-cli https://github.com/jordanterry/gefx-cli
+brew install gfx-cli
 ```
 
 ### From PyPI
