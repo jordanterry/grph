@@ -21,27 +21,33 @@ For Homebrew installation:
 ### Homebrew (macOS/Linux)
 
 ```bash
+brew install jordanterry/grph/grph-cli
+```
+
+Or manually:
+
+```bash
 brew tap jordanterry/grph https://github.com/jordanterry/grph
-brew install gfx-cli
+brew install grph-cli
 ```
 
 ### From PyPI
 
 ```bash
-pip install gfx-cli
+pip install grph-cli
 ```
 
 ### Using pipx (Isolated Environment)
 
 ```bash
-pipx install gfx-cli
+pipx install grph-cli
 ```
 
 ### From Source
 
 ```bash
 git clone https://github.com/jordanterry/grph.git
-cd gefx-cli
+cd grph
 pip install -e .
 ```
 
@@ -49,7 +55,7 @@ pip install -e .
 
 ```bash
 grph --version
-# gfx, version 0.1.0
+# grph, version 0.3.0
 ```
 
 ## Your First Commands

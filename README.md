@@ -27,7 +27,13 @@ pip install grph-cli
 ### Via Homebrew (macOS)
 
 ```bash
-brew tap jordanterry/grph
+brew install jordanterry/grph/grph-cli
+```
+
+Or manually:
+
+```bash
+brew tap jordanterry/grph https://github.com/jordanterry/grph
 brew install grph-cli
 ```
 
