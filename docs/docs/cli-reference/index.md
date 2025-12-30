@@ -5,9 +5,11 @@ title: CLI Reference Overview
 
 # CLI Reference
 
-GFX CLI provides four main commands for working with GEXF graph files.
+GFX CLI provides comprehensive commands for working with GEXF graph files.
 
 ## Commands Overview
+
+### Basic Commands
 
 | Command | Description |
 |---------|-------------|
@@ -15,6 +17,39 @@ GFX CLI provides four main commands for working with GEXF graph files.
 | [`gfx meta`](./meta) | Display full metadata from the GEXF file |
 | [`gfx nodes`](./nodes) | List and filter nodes in the graph |
 | [`gfx edges`](./edges) | List and filter edges in the graph |
+
+### Graph Traversal
+
+| Command | Description |
+|---------|-------------|
+| [`gfx neighbors`](./neighbors) | Find neighbors of a node |
+| [`gfx path`](./path) | Find the shortest path between two nodes |
+| [`gfx all-paths`](./all-paths) | Find all simple paths between two nodes |
+| [`gfx has-path`](./has-path) | Check if a path exists between two nodes |
+| [`gfx reachable`](./reachable) | Find all nodes reachable from a given node |
+| [`gfx common-neighbors`](./common-neighbors) | Find nodes that are neighbors of both given nodes |
+
+### Graph Analysis
+
+| Command | Description |
+|---------|-------------|
+| [`gfx stats`](./stats) | Display comprehensive graph statistics |
+| [`gfx centrality`](./centrality) | Calculate centrality metrics for nodes |
+| [`gfx components`](./components) | Analyze connected components in the graph |
+| [`gfx degree`](./degree) | Show node degree information |
+
+### Subgraph Operations
+
+| Command | Description |
+|---------|-------------|
+| [`gfx ego`](./ego) | Extract the ego graph (neighborhood) around a node |
+| [`gfx subgraph`](./subgraph) | Extract a subgraph containing only specified nodes |
+
+### Export
+
+| Command | Description |
+|---------|-------------|
+| [`gfx export`](./export) | Export the graph to different formats |
 
 ## Global Options
 

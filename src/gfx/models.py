@@ -2,6 +2,24 @@
 
 from dataclasses import dataclass, field
 from typing import Any
+from enum import Enum
+
+
+class CentralityType(Enum):
+    """Types of centrality metrics."""
+    DEGREE = "degree"
+    BETWEENNESS = "betweenness"
+    CLOSENESS = "closeness"
+    PAGERANK = "pagerank"
+    EIGENVECTOR = "eigenvector"
+
+
+class ExportFormat(Enum):
+    """Supported export formats."""
+    JSON = "json"
+    GRAPHML = "graphml"
+    ADJLIST = "adjlist"
+    EDGELIST = "edgelist"
 
 
 @dataclass(frozen=True)
@@ -130,3 +148,98 @@ class Edge:
                 return False
 
         return True
+
+
+@dataclass
+class PathResult:
+    """A path between two nodes in the graph."""
+
+    source: str
+    target: str
+    path: list[str]
+    length: int
+    total_weight: float | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert path result to a dictionary for JSON serialization."""
+        return {
+            "source": self.source,
+            "target": self.target,
+            "path": self.path,
+            "length": self.length,
+            "total_weight": self.total_weight,
+        }
+
+
+@dataclass
+class GraphStats:
+    """Statistical summary of a graph."""
+
+    node_count: int
+    edge_count: int
+    density: float
+    is_directed: bool
+    is_connected: bool
+    num_components: int
+    avg_degree: float
+    avg_clustering: float
+    has_cycles: bool
+    diameter: int | None = None
+    radius: int | None = None
+    avg_path_length: float | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert stats to a dictionary for JSON serialization."""
+        return {
+            "node_count": self.node_count,
+            "edge_count": self.edge_count,
+            "density": round(self.density, 4),
+            "is_directed": self.is_directed,
+            "is_connected": self.is_connected,
+            "num_components": self.num_components,
+            "avg_degree": round(self.avg_degree, 2),
+            "avg_clustering": round(self.avg_clustering, 4),
+            "has_cycles": self.has_cycles,
+            "diameter": self.diameter,
+            "radius": self.radius,
+            "avg_path_length": round(self.avg_path_length, 4) if self.avg_path_length else None,
+        }
+
+
+@dataclass
+class CentralityResult:
+    """Centrality scores for nodes."""
+
+    centrality_type: str
+    scores: dict[str, float]
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert centrality result to a dictionary for JSON serialization."""
+        return {
+            "type": self.centrality_type,
+            "scores": {k: round(v, 6) for k, v in self.scores.items()},
+        }
+
+    def top_n(self, n: int = 10) -> list[tuple[str, float]]:
+        """Get the top N nodes by centrality score."""
+        sorted_scores = sorted(self.scores.items(), key=lambda x: x[1], reverse=True)
+        return sorted_scores[:n]
+
+
+@dataclass
+class ComponentInfo:
+    """Information about connected components in the graph."""
+
+    num_components: int
+    component_sizes: list[int]
+    largest_component_size: int
+    components: list[list[str]]
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert component info to a dictionary for JSON serialization."""
+        return {
+            "num_components": self.num_components,
+            "component_sizes": self.component_sizes,
+            "largest_component_size": self.largest_component_size,
+            "components": self.components,
+        }

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "gfx-cli"
-version = "0.1.0"
+version = "0.2.0"
 description = "CLI tool for interrogating and browsing GEXF graph files"
 requires-python = ">=3.10"
 license = "MIT"
@@ -15,6 +15,7 @@ dependencies = [
     "click>=8.0",
     "networkx>=3.0",
     "rich>=13.0",
+    "scipy>=1.11",
 ]
 
 [project.optional-dependencies]
