@@ -9,22 +9,39 @@ This guide will help you install GFX CLI and run your first commands.
 
 ## Prerequisites
 
+For pip/pipx installation:
 - Python 3.10 or higher
-- pip (Python package manager)
+- pip or pipx
+
+For Homebrew installation:
+- Homebrew (manages Python automatically)
 
 ## Installation
 
-### From PyPI (Recommended)
+### Homebrew (macOS/Linux)
+
+```bash
+brew tap jordanterry/tap
+brew install gfx-cli
+```
+
+### From PyPI
 
 ```bash
 pip install gfx-cli
 ```
 
+### Using pipx (Isolated Environment)
+
+```bash
+pipx install gfx-cli
+```
+
 ### From Source
 
 ```bash
-git clone https://github.com/your-username/gfx-cli.git
-cd gfx-cli
+git clone https://github.com/jordanterry/gefx-cli.git
+cd gefx-cli
 pip install -e .
 ```
 

@@ -1,0 +1,100 @@
+# This workflow goes in jordanterry/homebrew-tap/.github/workflows/update-formula.yml
+name: Update Formula
+
+on:
+  repository_dispatch:
+    types: [update-formula]
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tap
+        uses: actions/checkout@v4
+
+      - name: Get release info
+        id: release
+        run: |
+          TAG="${{ github.event.client_payload.tag }}"
+          VERSION="${TAG#v}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Download and calculate SHA256
+        id: sha
+        run: |
+          TAG="${{ steps.release.outputs.tag }}"
+          curl -sL "https://github.com/jordanterry/gefx-cli/archive/refs/tags/${TAG}.tar.gz" -o release.tar.gz
+          SHA256=$(sha256sum release.tar.gz | cut -d' ' -f1)
+          echo "sha256=$SHA256" >> $GITHUB_OUTPUT
+
+      - name: Update formula
+        run: |
+          VERSION="${{ steps.release.outputs.version }}"
+          SHA256="${{ steps.sha.outputs.sha256 }}"
+
+          cat > Formula/gfx-cli.rb << 'FORMULA'
+          class GfxCli < Formula
+            include Language::Python::Virtualenv
+
+            desc "CLI tool for interrogating and browsing GEXF graph files"
+            homepage "https://jordanterry.github.io/gefx-cli/"
+            url "https://github.com/jordanterry/gefx-cli/archive/refs/tags/v__VERSION__.tar.gz"
+            sha256 "__SHA256__"
+            license "MIT"
+
+            depends_on "python@3.11"
+
+            resource "click" do
+              url "https://files.pythonhosted.org/packages/96/d3/f04c7bfcf5c1862a2a5b845c6b2b360488cf47af55dfa79c98f6a6bf98b5/click-8.1.7.tar.gz"
+              sha256 "ca9853ad459e787e2192211578cc907e7594e294c7ccc834310722b41b9ca6de"
+            end
+
+            resource "networkx" do
+              url "https://files.pythonhosted.org/packages/fd/1d/06c08fd31f4a0a0cfa498a6e9d35ff4c0c6b7cde1f7c3b8f7f8be6e5c1c3/networkx-3.4.2.tar.gz"
+              sha256 "307c3669428c5362aab27c8a1260ec8c6f0c39e6b2ac0de7a7c0c7f9b3c4f0e1"
+            end
+
+            resource "rich" do
+              url "https://files.pythonhosted.org/packages/d9/e9/cf9ef5245d835065e6673781dbd4b8911d352fb770d56cf0879cf11b7e32/rich-13.9.4.tar.gz"
+              sha256 "439594978a49a09530cff7ebc4b5c7103ef57c5a3c17ef1a9f2a6e0d5b0c0c5a"
+            end
+
+            resource "markdown-it-py" do
+              url "https://files.pythonhosted.org/packages/38/71/3b932df7a88b6e473962963e7c7b7c832ce4530d3e3f32960886ff9f24c5/markdown_it_py-3.0.0.tar.gz"
+              sha256 "e3f60a94fa066dc52ec76661e37c851cb232d92f9886b15cb560aaada2df8feb"
+            end
+
+            resource "mdurl" do
+              url "https://files.pythonhosted.org/packages/d6/54/cfe61301667036ec958cb99bd3efefba235e65cdeb9c84d24a8293ba1d90/mdurl-0.1.2.tar.gz"
+              sha256 "bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba"
+            end
+
+            resource "pygments" do
+              url "https://files.pythonhosted.org/packages/8e/62/8336eff65bcbc8e4cb5d05b55faf041285951b6e80f33e2bff2024788f31/pygments-2.18.0.tar.gz"
+              sha256 "786ff802f32e91311bff3889f6e9a86e81505fe99f2735bb6d60ae0c5004f199"
+            end
+
+            def install
+              virtualenv_install_with_resources
+            end
+
+            test do
+              assert_match "version", shell_output("#{bin}/gfx --version")
+            end
+          end
+          FORMULA
+
+          sed -i "s/__VERSION__/$VERSION/g" Formula/gfx-cli.rb
+          sed -i "s/__SHA256__/$SHA256/g" Formula/gfx-cli.rb
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Formula/gfx-cli.rb
+          git commit -m "Update gfx-cli to ${{ steps.release.outputs.version }}"
+          git push
