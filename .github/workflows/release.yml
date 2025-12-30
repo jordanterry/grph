@@ -48,14 +48,47 @@ jobs:
           files: dist/*
           generate_release_notes: true
 
-  update-homebrew:
+  update-formula:
     needs: release
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Homebrew tap update
-        uses: peter-evans/repository-dispatch@v3
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
-          repository: jordanterry/homebrew-tap
-          event-type: update-formula
-          client-payload: '{"formula": "gfx-cli", "tag": "${{ github.ref_name }}"}'
+          ref: main
+
+      - name: Get version from tag
+        id: version
+        run: |
+          TAG="${{ github.ref_name }}"
+          VERSION="${TAG#v}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Calculate SHA256
+        id: sha
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+          curl -sL "https://github.com/jordanterry/gefx-cli/archive/refs/tags/${TAG}.tar.gz" -o release.tar.gz
+          SHA256=$(sha256sum release.tar.gz | cut -d' ' -f1)
+          echo "sha256=$SHA256" >> $GITHUB_OUTPUT
+
+      - name: Update formula
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          TAG="${{ steps.version.outputs.tag }}"
+          SHA256="${{ steps.sha.outputs.sha256 }}"
+
+          # Update version in URL
+          sed -i "s|archive/refs/tags/v[^\"]*\.tar\.gz|archive/refs/tags/${TAG}.tar.gz|" Formula/gfx-cli.rb
+
+          # Update SHA256
+          sed -i "s|sha256 \"[^\"]*\"|sha256 \"${SHA256}\"|" Formula/gfx-cli.rb
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Formula/gfx-cli.rb
+          git diff --staged --quiet || git commit -m "Update Homebrew formula to ${{ steps.version.outputs.tag }}"
+          git push
