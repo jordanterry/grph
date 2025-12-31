@@ -3,8 +3,8 @@ class GrphCli < Formula
 
   desc "CLI tool for exploring, analyzing, and querying graph files"
   homepage "https://jordanterry.github.io/grph/"
-  url "https://github.com/jordanterry/grph/archive/refs/tags/v0.3.1.tar.gz"
-  sha256 "e90da7240e656705d706e462a9354f4e531f3754dc9777e7d8e113375a6d020c"
+  url "https://github.com/jordanterry/grph/archive/refs/tags/v0.3.2.tar.gz"
+  sha256 "ba74cfc0ece49fd4244d29108ee82973d0cb9ab569292332b80db104b5e39451"
   license "MIT"
 
   depends_on "numpy"
